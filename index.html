@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NebulaPlay — Educational Demo</title>
+  <meta name="description" content="Educational demo casino UI with play credits. No real gambling.">
+  <link rel="icon" href="./assets/favicon.svg">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // Tailwind config for dark neon theme
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            bg: "#0b0f1a",
+            card: "#0f1424",
+            neon: "#68e1fd",
+            neon2: "#8fff8f",
+            accent: "#9b8cff",
+            warn: "#ffb86b",
+            danger: "#ff6b6b"
+          },
+          boxShadow: {
+            glow: "0 0 20px rgba(104,225,253,0.35)",
+            glow2: "0 0 20px rgba(155,140,255,0.35)",
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    /* Minimal extras for focus outlines and animations */
+    :root { color-scheme: dark; }
+    html, body { height:100%; background:#0b0f1a; }
+    .focus-ring:focus { outline: 2px solid #68e1fd; outline-offset: 2px; }
+    .gradient-text { background: linear-gradient(90deg,#68e1fd,#9b8cff,#8fff8f); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .page { display:none; }
+    .page.active { display:block; }
+    .glass { background: rgba(255,255,255,0.02); backdrop-filter: blur(6px); }
+  </style>
+</head>
+<body class="text-slate-200">
+  <!-- Banner -->
+  <div class="w-full text-center text-xs sm:text-sm py-2 bg-card text-slate-300 border-b border-slate-800">
+    <strong>Educational Demo Only — No Real Gambling.</strong> Play credits only. Do not use with real money.
+  </div>
+
+  <!-- Navbar -->
+  <header class="sticky top-0 z-50 bg-card/80 glass border-b border-slate-800">
+    <nav class="mx-auto max-w-6xl px-4 py-3 flex items-center justify-between">
+      <a href="#/home" class="flex items-center gap-2 focus-ring" aria-label="NebulaPlay Home">
+        <img src="./assets/logo.svg" class="h-7 w-7" alt="NebulaPlay">
+        <span class="text-lg font-semibold gradient-text">NebulaPlay</span>
+      </a>
+      <div class="flex items-center gap-3">
+        <span id="live-balance" class="hidden sm:inline-flex items-center gap-2 text-sm px-3 py-1 rounded-full border border-slate-700 bg-bg shadow-glow" title="Live Balance">₵ <span id="balance-amount">—</span></span>
+        <div id="auth-controls" class="flex items-center gap-2">
+          <a href="#/auth" class="px-3 py-1 rounded-xl bg-bg border border-slate-700 hover:shadow-glow focus-ring">Sign In</a>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Main Container -->
+  <main class="mx-auto max-w-6xl px-4 py-6 space-y-8" id="app-container" tabindex="-1">
+    <!-- Home Page -->
+    <section id="page-home" class="page active">
+      <div class="grid md:grid-cols-2 gap-6">
+        <div class="p-6 rounded-2xl bg-card border border-slate-800 shadow-glow">
+          <h1 class="text-2xl sm:text-3xl font-bold gradient-text">Welcome to NebulaPlay</h1>
+          <p class="mt-3 text-slate-300">An educational demo showing a modern casino-style UI using play credits only. Firebase Authentication + Cloud Firestore power real-time balances, transactions, and bets.</p>
+          <div class="mt-5 flex gap-3">
+            <a href="#/casino" class="px-4 py-2 rounded-xl bg-bg border border-slate-700 hover:shadow-glow focus-ring">Explore Casino</a>
+            <a href="#/responsible" class="px-4 py-2 rounded-xl bg-bg border border-slate-700 hover:shadow-glow focus-ring">Responsible Play</a>
+          </div>
+        </div>
+        <div class="p-6 rounded-2xl bg-card border border-slate-800 shadow-glow2">
+          <h2 class="text-xl font-semibold">Why this demo?</h2>
+          <ul class="mt-3 list-disc pl-5 text-slate-300 space-y-2">
+            <li>Client-only Firebase with strict security rules and transactions.</li>
+            <li>Play-money wallet and append-only transactions.</li>
+            <li>Crash, Dice, Plinko demo games.</li>
+            <li>Accessible, keyboard-friendly, responsive UI.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="grid md:grid-cols-3 gap-6">
+        <a href="#/casino" class="p-5 rounded-2xl bg-card border border-slate-800 hover:shadow-glow focus-ring">
+          <h3 class="font-semibold">Casino</h3><p class="text-slate-400 text-sm">Crash • Dice • Plinko</p>
+        </a>
+        <a href="#/wallet" class="p-5 rounded-2xl bg-card border border-slate-800 hover:shadow-glow focus-ring">
+          <h3 class="font-semibold">Wallet</h3><p class="text-slate-400 text-sm">Play credits only</p>
+        </a>
+        <a href="#/profile" class="p-5 rounded-2xl bg-card border border-slate-800 hover:shadow-glow focus-ring">
+          <h3 class="font-semibold">Profile</h3><p class="text-slate-400 text-sm">History & settings</p>
+        </a>
+      </div>
+    </section>
+
+    <!-- Casino Page -->
+    <section id="page-casino" class="page">
+      <div class="flex items-center justify-between gap-3">
+        <div>
+          <h2 class="text-2xl font-bold gradient-text">Casino</h2>
+          <p class="text-slate-400 text-sm">Search & filter demo games</p>
+        </div>
+        <div class="flex gap-2">
+          <input id="casino-search" class="px-3 py-2 rounded-xl bg-bg border border-slate-700 focus-ring" placeholder="Search games..." aria-label="Search games">
+          <select id="casino-filter" class="px-3 py-2 rounded-xl bg-bg border border-slate-700 focus-ring" aria-label="Filter games">
+            <option value="all">All</option>
+            <option value="fast">Fast</option>
+            <option value="animated">Animated</option>
+          </select>
+        </div>
+      </div>
+      <div id="games-grid" class="mt-5 grid sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+    </section>
+
+    <!-- Wallet Page -->
+    <section id="page-wallet" class="page">
+      <div class="p-6 rounded-2xl bg-card border border-slate-800">
+        <h2 class="text-2xl font-bold gradient-text">Wallet</h2>
+        <p class="text-slate-400 text-sm">Play credits stored in Firestore. Balance updates live.</p>
+        <div class="mt-4 flex items-center gap-3">
+          <span class="text-lg">Current Balance:</span>
+          <span class="text-2xl font-bold" id="wallet-balance">—</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Profile Page -->
+    <section id="page-profile" class="page">
+      <div class="grid lg:grid-cols-3 gap-6">
+        <div class="p-6 rounded-2xl bg-card border border-slate-800 lg:col-span-2">
+          <h2 class="text-2xl font-bold gradient-text">Transactions</h2>
+          <div id="tx-list" class="mt-4 space-y-3" aria-live="polite"></div>
+          <button id="tx-load-more" class="mt-4 px-3 py-2 rounded-xl bg-bg border border-slate-700 focus-ring">Load more</button>
+        </div>
+        <div class="p-6 rounded-2xl bg-card border border-slate-800">
+          <h2 class="text-2xl font-bold gradient-text">Bets</h2>
+          <div id="bets-list" class="mt-4 space-y-3" aria-live="polite"></div>
+          <button id="bets-load-more" class="mt-4 px-3 py-2 rounded-xl bg-bg border border-slate-700 focus-ring">Load more</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Auth Page -->
+    <section id="page-auth" class="page">
+      <div class="max-w-md mx-auto p-6 rounded-2xl bg-card border border-slate-800">
+        <h2 class="text-2xl font-bold gradient-text">Sign up / Sign in</h2>
+        <form id="auth-form" class="mt-4 space-y-3">
+          <input type="email" id="auth-email" class="w-full px-3 py-2 rounded-xl bg-bg border border-slate-700 focus-ring" placeholder="Email" required>
+          <input type="password" id="auth-password" class="w-full px-3 py-2 rounded-xl bg-bg border border-slate-700 focus-ring" placeholder="Password" required>
+          <button class="w-full px-3 py-2 rounded-xl bg-bg border border-slate-700 hover:shadow-glow focus-ring" id="btn-email-signin" type="submit">Sign In</button>
+          <button class="w-full px-3 py-2 rounded-xl bg-bg border border-slate-700 focus-ring" id="btn-email-signup" type="button">Create Account</button>
+          <button class="w-full px-3 py-2 rounded-xl bg-bg border border-slate-700 focus-ring" id="btn-reset" type="button">Reset Password</button>
+          <div class="text-center text-slate-400">or</div>
+          <button class="w-full px-3 py-2 rounded-xl bg-bg border border-slate-700 focus-ring" id="btn-google" type="button">Continue with Google</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Responsible Play Page -->
+    <section id="page-responsible" class="page">
+      <div class="p-6 rounded-2xl bg-card border border-slate-800">
+        <h2 class="text-2xl font-bold gradient-text">Responsible Play</h2>
+        <p class="mt-2 text-slate-300">This is an educational demo. No real currency is used. If casino mechanics are uncomfortable, take a break.</p>
+        <ul class="list-disc pl-5 mt-3 text-slate-300 space-y-2">
+          <li>Use <a class="underline" href="https://firebase.google.com/docs/emulator-suite" target="_blank" rel="noreferrer">Firebase Emulator Suite</a> for local testing.</li>
+          <li>Avoid converting this demo into real-money features.</li>
+          <li>Keep sessions short and mindful.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Game Modal -->
+    <div id="game-modal" class="hidden fixed inset-0 z-50 items-center justify-center">
+      <div class="absolute inset-0 bg-black/70" data-close-modal></div>
+      <div class="relative max-w-2xl w-full mx-4 p-4 rounded-2xl bg-card border border-slate-800">
+        <div class="flex items-center justify-between">
+          <h3 id="game-title" class="text-xl font-semibold gradient-text">Game</h3>
+          <button class="px-3 py-1 rounded-xl border border-slate-700 bg-bg focus-ring" data-close-modal aria-label="Close modal">✕</button>
+        </div>
+        <div id="game-container" class="mt-4"></div>
+      </div>
+    </div>
+
+    <!-- Toasts -->
+    <div id="toast" class="fixed bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 rounded-xl bg-card border border-slate-700 shadow-glow hidden" role="status"></div>
+  </main>
+
+  <!-- Scripts -->
+  <script type="module" src="./app/main.js"></script>
+</body>
+</html>
